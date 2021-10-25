@@ -45,8 +45,7 @@ my @b = @a.map: * match_pattern
           -> | { 'default' }
 
 put @b.raku;
-=output [3, 5, "b", "b | c", "d: 4", "e: 11", "ten", "f or g or h", "f or g or h", "f or g or h", "twenty",
-"attribute", "default", "g: 10", 24]␤
+=output [3, 5, "b", "b | c", "d: 4", "e: 11", "ten", "f or g or h", "f or g or h", "f or g or h", "twenty", "attribute", "default", "g: 10", 24]␤
 
 my @c = @a.map: * ┇
           -> @ (Str $a, Str $b) { join ' | ', $a, $b },
@@ -54,8 +53,7 @@ my @c = @a.map: * ┇
           -> | { 'default' }
 
 put @c.raku;
-=output ["default", 5, "default", "b | c", "default", "default", "default", "default", "default", "default",
-"default", "default", "default", "default", "default"]␤
+=output ["default", 5, "default", "b | c", "default", "default", "default", "default", "default", "default", "default", "default", "default", "default", "default"]␤
 
 for @a {
     .put with .&[match_pattern]:
