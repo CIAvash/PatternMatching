@@ -1,0 +1,14 @@
+{
+    "perl": "6.d",
+    "name": "PatternMatching",
+    "description": "Library for pattern matching.",
+    "authors": ["Siavash Askari Nasr"],
+    "auth": "zef:CIAvash",
+    "version": "0.1.0",
+    "tags": ["Library", "Functional Programming", "Pattern Matching", "Infix", "Operator"],
+    "license": "LGPL-3.0-or-later",
+    "source-url": "https://github.com/CIAvash/PatternMatching.git",
+    "provides": {
+        "PatternMatching": "lib/PatternMatching.rakumod"
+    }
+}

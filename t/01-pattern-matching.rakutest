@@ -1,0 +1,51 @@
+use v6.d;
+
+use Test;
+
+plan 19;
+
+use PatternMatching:auth<zef:CIAvash>;
+
+class C {
+    has $.a = 'attribute';
+}
+
+my @a = 1, [2, 3], 'a', <b c>, :d(4), :e[5, 6], 10, 'f', 'g', 'h', 20,
+        C.new, PatternMatching, :g(8, 2), [7, 8, 9];
+
+my @b = @a.map: * match_pattern
+          -> 10 { 'ten' },
+          -> Int $a where * > 10 { 'twenty' },
+          -> Int $a { $a + 2 },
+          -> Str $a where any <f g h> { 'f or g or h' },
+          -> Str $a { $a.succ },
+          -> C (:$a) { $a },
+          -> @ (Str $a, Str $b) { join ' | ', $a, $b },
+          -> @ (Int $a, Int $b) { $a + $b },
+          -> @ (Int $a, *@b where .all ~~ Int) { [+] $a, |@b },
+          -> Pair (:key($a), :value([$b, $c])) { "$a: {$b + $c}" },
+          -> Hash() (:$g ($a, $b)) { "$g: {$a + $b}" },
+          -> Pair $pair { $pair.kv.join: ': ' },
+          -> | { 'default' }
+
+is-deeply @b[0], 3, 'Int $';
+is-deeply @b[1], 5, 'Int $, Int $';
+is-deeply @b[2], 'b', 'Str $';
+is-deeply @b[3], 'b | c', 'Str $, Str $';
+is-deeply @b[4], 'd: 4', ':$pair';
+is-deeply @b[5], 'e: 11', '(:key($), :value([$, $]))';
+is-deeply @b[6], 'ten', 'Literal 10';
+for @b[7..9] {
+    is-deeply $_, 'f or g or h', 'Where junction';
+}
+is-deeply @b[10], 'twenty', 'where * > 10';
+is-deeply @b[11], 'attribute', 'Class attribute destructuring';
+is-deeply @b[12], 'default', 'default';
+is-deeply @b[13], 'g: 10', 'Hash() destructuring';
+is-deeply @b[14], 24, 'Array destructuring with slurpy parameter';
+
+is-deeply (5 ┇ -> Int $a { $a.succ }), 6, '┇ operator';
+
+fails-like { Nil match_pattern -> Int $a { $a + 2 } }, X::PatternMatching::MatchFailed, 'Nil topic';
+fails-like { Empty match_pattern -> Int $a { $a + 2 } }, X::PatternMatching::MatchFailed, 'Empty topic';
+fails-like { 2 match_pattern -> Str $a { $a.succ } }, X::PatternMatching::MatchFailed, 'Non-existent pattern';
