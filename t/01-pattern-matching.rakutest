@@ -2,7 +2,7 @@ use v6.d;
 
 use Test;
 
-plan 19;
+plan 20;
 
 use PatternMatching:auth<zef:CIAvash>;
 
@@ -45,6 +45,8 @@ is-deeply @b[13], 'g: 10', 'Hash() destructuring';
 is-deeply @b[14], 24, 'Array destructuring with slurpy parameter';
 
 is-deeply (5 ┇ -> Int $a { $a.succ }), 6, '┇ operator';
+
+is-deeply (10 ┇ -> $ { Empty }), Empty, 'Empty and undefined return values should work';
 
 fails-like { Nil match_pattern -> Int $a { $a + 2 } }, X::PatternMatching::MatchFailed, 'Nil topic';
 fails-like { Empty match_pattern -> Int $a { $a + 2 } }, X::PatternMatching::MatchFailed, 'Empty topic';

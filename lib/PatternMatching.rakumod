@@ -1,10 +1,10 @@
 use v6.d;
 
 class X::PatternMatching::MatchFailed:auth($?DISTRIBUTION.meta<auth>) is Exception {
-    has Str() $.topic;
+    has $.topic;
 
     method message {
-        "Pattern matching failed: failed to match pattern for $!topic";
+        "Pattern matching failed: failed to match pattern for $!topic.raku()";
     }
 }
 
@@ -118,9 +118,8 @@ module PatternMatching:auth($?DISTRIBUTION.meta<auth>):ver($?DISTRIBUTION.meta<v
     #| Matches C<topic> against a list of patterns(functions).
     #| Returns C<Failure>(C<X::PatternMatching::MatchFailed>) when no pattern is matched.
     sub infix:<match_pattern> ($topic, *@functions where .all ~~ Code) is equiv<Z> is assoc<list> is export {
-        @functions.first: *.cando: \($topic)
-        andthen .($topic)
-        orelse fail X::PatternMatching::MatchFailed.new: topic => $topic.raku;
+        (@functions.first: *.cando: \($topic) or fail X::PatternMatching::MatchFailed.new: :$topic)
+        andthen .($topic);
     }
 
     #| Alias for C<match_pattern>
